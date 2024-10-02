@@ -1,15 +1,15 @@
-export default function Circle() {
+import { TCircle } from "@/types";
+export default function Circle({ id, coordinates, width, height }: TCircle) {
   return (
     <div
-      className="absolute z-30 h-16 w-16 rounded-full border-2 border-white bg-gray-200 bg-opacity-50 hover:shadow-lg cursor-pointer transition-all aspect-square"
+      id={id}
+      className="absolute z-30 rounded-full border-2 border-white bg-gray-200 bg-opacity-50 hover:shadow-lg cursor-pointer transition-all aspect-square"
       style={{
-        top: `${"circle.y"}px`,
-        left: `${"circle.x"}px`,
-        width: `${"circle.width"}px`,
-        height: `${"circle.height"}px`,
-        // transition: draggingId === circle.id ? "none" : "top 0.3s, left 0.3s",
+        top: `${coordinates?.y}px`,
+        left: `${coordinates?.x}px`,
+        width: `${width}px`,
+        height: `${height}px`,
       }}
-      // onMouseDown={(e) => handleMouseDown(e, circle.id)}
     />
   );
 }
