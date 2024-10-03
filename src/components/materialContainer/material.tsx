@@ -1,24 +1,37 @@
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
+import { TMaterialSelected } from "@/types";
 
-export default function Material() {
+export default function Material({
+  id,
+  name,
+  imageUrl,
+  bgColor,
+  onSelect,
+  isSelected,
+}: TMaterialSelected) {
   return (
-    <div className="mt-10">
-      <h2 className="text-2xl font-bold mb-4">Material. Auswählen.</h2>
+    <div id={id} className="mt-10">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
-        <Card className="flex cursor-pointer transition-all overflow-hidden bg-[#167C3D]/10 max-w-72">
+        <Card
+          onClick={() => onSelect(id)}
+          style={{ backgroundColor: bgColor }}
+          className={`${
+            isSelected ? "border-2 border-[#167C3D]" : ""
+          }   flex cursor-pointer bg-opacity-20 transition-all overflow-hidden max-w-72 hover:shadow-lg`}
+        >
           <div className="flex h-32">
             <div className="w-32 relative">
               <Image
-                src={"/assets/image1.webp"}
-                alt={"material.name"}
+                src={imageUrl}
+                alt={name}
                 layout="fill"
                 objectFit="cover"
               />
             </div>
           </div>
           <CardContent className="flex-1 p-4 flex flex-col justify-center">
-            <h3 className="font-semibold text-lg mb-2">{"material"}</h3>
+            <h3 className="font-semibold text-lg mb-2">{name}</h3>
           </CardContent>
         </Card>
       </div>

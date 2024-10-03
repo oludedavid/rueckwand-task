@@ -1,5 +1,5 @@
 "use client";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import Dimension from "@/components/dimension/dimension";
 import Material from "@/components/materialContainer/material";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -7,9 +7,28 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import CircleContext from "@/context/circle-context";
-export default function Customisation() {
+import { materials } from "@/constants";
+export default function Customisation({
+  dragZoneRef,
+  handleMaterialSelectedId,
+}: {
+  dragZoneRef: React.RefObject<HTMLDivElement>;
+  handleMaterialSelectedId: (materialId: string) => void;
+}) {
   const circleContext = useContext(CircleContext);
+  const [selectedMaterial, setSelectedMaterial] = useState(materials[0]);
   const { circles, addCircle } = circleContext;
+
+  const handleMaterialSelected = (materialId: string) => {
+    const material = materials.find((m) => m.id === materialId) || materials[0];
+    setSelectedMaterial(material);
+    handleMaterialSelectedId(material.id);
+  };
+
+  const handleLogData = () => {
+    console.log(circles);
+    console.log(selectedMaterial);
+  };
 
   return (
     <div className="lg:w-1/2">
@@ -22,6 +41,7 @@ export default function Customisation() {
                 key={circle.id}
                 circleId={circle.id}
                 circleCoordinates={circle.coordinates}
+                dragZoneRef={dragZoneRef}
               />
             ))}
             <Button
@@ -33,11 +53,25 @@ export default function Customisation() {
               <Plus className="ml-2 h-4 w-4" />
             </Button>
             <Separator />
-            <Material />
+            {materials.map((material) => (
+              <Material
+                key={material.id}
+                id={material.id}
+                name={material.name}
+                imageUrl={material.imageUrl}
+                onSelect={() => handleMaterialSelected(material.id)}
+                isSelected={material.id === selectedMaterial.id}
+                bgColor={material.bgColor}
+              />
+            ))}
             <Separator />
             <div className="mt-4">
-              <Button className="w-60 p-6 bg-[#167C3D] text-white rounded-md">
-                Submit
+              <Button
+                type="submit"
+                onClick={handleLogData}
+                className="w-60 p-6 bg-[#167C3D] text-white rounded-md"
+              >
+                Log Data
               </Button>
             </div>
           </div>

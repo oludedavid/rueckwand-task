@@ -6,6 +6,9 @@ export type TCircle = {
   };
   width: number;
   height: number;
+  onDragStart?: (event: React.DragEvent<HTMLDivElement>) => void;
+  onDragEnd?: (event: React.DragEvent<HTMLDivElement>) => void;
+  isDragging?: boolean;
 };
 
 export type TMaterial = {
@@ -14,3 +17,9 @@ export type TMaterial = {
   imageUrl: string;
   bgColor: string;
 };
+
+// Extending TMaterial to create TMaterialSelected
+export interface TMaterialSelected extends TMaterial {
+  onSelect: (id: string) => void;
+  isSelected: boolean;
+}

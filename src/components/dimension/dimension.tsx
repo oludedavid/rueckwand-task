@@ -5,36 +5,76 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Minus, X } from "lucide-react";
 import CircleContext from "@/context/circle-context";
+
 export default function Dimension({
   circleId,
   circleCoordinates,
+  dragZoneRef,
 }: {
+  dragZoneRef: React.RefObject<HTMLDivElement>;
   circleId: string;
   circleCoordinates: { x: number; y: number };
 }) {
-  const circleContext = useContext(CircleContext);
-  // Handle the case where circleContext is null
-  if (!circleContext) {
-    return <div>Error: CircleContext is not available.</div>;
-  }
+  const { circles, updateCircle, deleteCircle } = useContext(CircleContext);
 
-  const { circles, updateCircle, deleteCircle } = circleContext;
+  const handleInputChange = (field: "x" | "y", value: string) => {
+    const newValue = Math.max(0, parseInt(value, 10));
+
+    if (field === "x") {
+      if (dragZoneRef.current) {
+        const container = dragZoneRef.current.getBoundingClientRect();
+        const currentCircle = circles.find((circle) => circle.id === circleId);
+
+        if (currentCircle) {
+          const maxX = container.width - currentCircle.width;
+          const boundedX = Math.min(newValue, maxX);
+          updateCircle(circleId, {
+            x: boundedX,
+            y: currentCircle.coordinates.y,
+          });
+        }
+      } else {
+        updateCircle(circleId, {
+          x: newValue,
+          y: circleCoordinates.y,
+        });
+      }
+    } else if (field === "y") {
+      if (dragZoneRef.current) {
+        const container = dragZoneRef.current.getBoundingClientRect();
+        const currentCircle = circles.find((circle) => circle.id === circleId);
+
+        if (currentCircle) {
+          const maxY = container.height - currentCircle.height;
+          const boundedY = Math.min(newValue, maxY);
+          updateCircle(circleId, {
+            x: currentCircle.coordinates.x,
+            y: boundedY,
+          });
+        }
+      } else {
+        updateCircle(circleId, {
+          x: circleCoordinates.x,
+          y: newValue,
+        });
+      }
+    }
+  };
 
   return (
-    <div id={`x-${circleId}`} className="flex items-center space-x-4 mb-4 ml-2">
+    <div
+      id={`circle-${circleId}`}
+      className="flex items-center space-x-4 mb-4 ml-2"
+    >
       <div>
-        <Label htmlFor={`x-${"index"}`}>X Point</Label>
+        <Label htmlFor={`x-${circleId}`}>X Point</Label>
         <Input
           className="h-14 bg-gray-200 w-30 border-0"
-          id={`x-${"index"}`}
+          id={`x-${circleId}`}
           type="number"
+          name="x"
           value={circleCoordinates.x}
-          onChange={(e) => {
-            updateCircle(circleId, {
-              x: parseInt(e.target.value),
-              y: circleCoordinates.y,
-            });
-          }}
+          onChange={(e) => handleInputChange("x", e.target.value)}
         />
       </div>
       <div className="flex">
@@ -46,13 +86,9 @@ export default function Dimension({
           className="h-14 bg-gray-200 w-30 border-0"
           id={`y-${circleId}`}
           type="number"
+          name="y"
           value={circleCoordinates.y}
-          onChange={(e) => {
-            updateCircle(circleId, {
-              x: circleCoordinates.x,
-              y: parseInt(e.target.value),
-            });
-          }}
+          onChange={(e) => handleInputChange("y", e.target.value)}
         />
       </div>
 
