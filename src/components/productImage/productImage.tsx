@@ -4,6 +4,7 @@ import { useContext, useState } from "react";
 import Image from "next/image";
 import Circle from "@/components/circle/circle";
 import CircleContext from "@/context/circle-context";
+import { useToast } from "@/hooks/use-toast";
 
 interface ProductImageProps {
   materialImageUrl: string;
@@ -17,6 +18,8 @@ export default function ProductImage({
   const { circles, updateCircle } = useContext(CircleContext);
   const [isDragging, setIsDragging] = useState(false);
   const [draggingCircleId, setDraggingCircleId] = useState<string>("");
+
+  const { toast } = useToast();
 
   const DIAMETER = 50;
   const COLLISION_DISTANCE_SQUARED = DIAMETER ** 2;
@@ -56,7 +59,11 @@ export default function ProductImage({
     if (!hasCollision) {
       updateCircle(draggingCircleId, { x: dropX, y: dropY });
     } else {
-      console.log("Collided with another circle");
+      toast({
+        variant: "destructive",
+        title: "Circle Collided",
+        description: "The circle has collided with another circle.",
+      });
     }
 
     setIsDragging(false);

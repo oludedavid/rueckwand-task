@@ -54,13 +54,13 @@ export default function Dimension({
   return (
     <div
       id={`circle-${circleId}`}
-      className="flex items-center space-x-4 mb-4 ml-2"
+      className="flex flex-col lg:flex-row items-start lg:items-center space-x-4 mb-4 ml-2"
     >
       {/* X Coordinate Input */}
       <div>
         <Label htmlFor={`x-${circleId}`}>X Point</Label>
         <Input
-          className="h-14 bg-gray-200 w-30 border-0"
+          className="h-14 bg-gray-200 border-0"
           id={`x-${circleId}`}
           type="number"
           name="x"
@@ -78,7 +78,7 @@ export default function Dimension({
       <div>
         <Label htmlFor={`y-${circleId}`}>Y Point</Label>
         <Input
-          className="h-14 bg-gray-200 w-30 border-0"
+          className="h-14 bg-gray-200 border-0"
           id={`y-${circleId}`}
           type="number"
           name="y"

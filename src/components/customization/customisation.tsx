@@ -9,6 +9,7 @@ import { Plus } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import CircleContext from "@/context/circle-context";
 import { materials } from "@/constants";
+import { useToast } from "@/hooks/use-toast";
 
 interface CustomisationProps {
   dragZoneRef: React.RefObject<HTMLDivElement>;
@@ -20,6 +21,8 @@ export default function Customisation({
   handleMaterialSelectedId,
 }: CustomisationProps) {
   const { circles, addCircle } = useContext(CircleContext);
+  const { toast } = useToast();
+
   const [selectedMaterial, setSelectedMaterial] = useState(materials[0]);
 
   const handleMaterialSelected = (materialId: string) => {
@@ -50,6 +53,12 @@ export default function Customisation({
     });
 
     console.log("Circles Data:", circleData);
+    toast({
+      variant: "default",
+      title: "Material and Circle Dimensions Data",
+      description:
+        "Circle data and material data has been logged to the console.",
+    });
   };
 
   return (
