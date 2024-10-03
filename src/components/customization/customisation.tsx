@@ -26,8 +26,27 @@ export default function Customisation({
   };
 
   const handleLogData = () => {
-    console.log(circles);
-    console.log(selectedMaterial);
+    if (dragZoneRef.current) {
+      const container = dragZoneRef.current.getBoundingClientRect();
+
+      const circleData = circles.map((circle) => {
+        const xPercent = (
+          (circle.coordinates.x / container.width) *
+          100
+        ).toFixed(2);
+        const yPercent = (
+          (circle.coordinates.y / container.height) *
+          100
+        ).toFixed(2);
+
+        return {
+          Pixels: `X:${circle.coordinates.x}, Y: ${circle.coordinates.y}`,
+          Percentage: `X:${xPercent}%, Y: ${yPercent}%`,
+          SelectedMaterial: selectedMaterial,
+        };
+      });
+      console.log("Circles Data:", circleData);
+    }
   };
 
   return (
