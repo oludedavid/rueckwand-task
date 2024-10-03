@@ -1,4 +1,5 @@
 "use client";
+
 import { useContext } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -6,59 +7,48 @@ import { Button } from "@/components/ui/button";
 import { Minus, X } from "lucide-react";
 import CircleContext from "@/context/circle-context";
 
+interface DimensionProps {
+  dragZoneRef: React.RefObject<HTMLDivElement>;
+  circleId: string;
+  circleCoordinates: { x: number; y: number };
+}
+
 export default function Dimension({
   circleId,
   circleCoordinates,
   dragZoneRef,
-}: {
-  dragZoneRef: React.RefObject<HTMLDivElement>;
-  circleId: string;
-  circleCoordinates: { x: number; y: number };
-}) {
+}: DimensionProps) {
   const { circles, updateCircle, deleteCircle } = useContext(CircleContext);
 
   const handleInputChange = (field: "x" | "y", value: string) => {
-    const newValue = Math.max(0, parseInt(value, 10));
+    const parsedValue = Math.max(0, parseInt(value, 10));
+
+    const currentCircle = circles.find((circle) => circle.id === circleId);
+    if (!currentCircle) return;
+
+    let updatedCoordinates = { ...currentCircle.coordinates };
 
     if (field === "x") {
       if (dragZoneRef.current) {
-        const container = dragZoneRef.current.getBoundingClientRect();
-        const currentCircle = circles.find((circle) => circle.id === circleId);
-
-        if (currentCircle) {
-          const maxX = container.width - currentCircle.width;
-          const boundedX = Math.min(newValue, maxX);
-          updateCircle(circleId, {
-            x: boundedX,
-            y: currentCircle.coordinates.y,
-          });
-        }
+        const containerWidth =
+          dragZoneRef.current.getBoundingClientRect().width;
+        const maxX = containerWidth - currentCircle.width;
+        updatedCoordinates.x = Math.min(parsedValue, maxX);
       } else {
-        updateCircle(circleId, {
-          x: newValue,
-          y: circleCoordinates.y,
-        });
+        updatedCoordinates.x = parsedValue;
       }
     } else if (field === "y") {
       if (dragZoneRef.current) {
-        const container = dragZoneRef.current.getBoundingClientRect();
-        const currentCircle = circles.find((circle) => circle.id === circleId);
-
-        if (currentCircle) {
-          const maxY = container.height - currentCircle.height;
-          const boundedY = Math.min(newValue, maxY);
-          updateCircle(circleId, {
-            x: currentCircle.coordinates.x,
-            y: boundedY,
-          });
-        }
+        const containerHeight =
+          dragZoneRef.current.getBoundingClientRect().height;
+        const maxY = containerHeight - currentCircle.height;
+        updatedCoordinates.y = Math.min(parsedValue, maxY);
       } else {
-        updateCircle(circleId, {
-          x: circleCoordinates.x,
-          y: newValue,
-        });
+        updatedCoordinates.y = parsedValue;
       }
     }
+
+    updateCircle(circleId, updatedCoordinates);
   };
 
   return (
@@ -66,6 +56,7 @@ export default function Dimension({
       id={`circle-${circleId}`}
       className="flex items-center space-x-4 mb-4 ml-2"
     >
+      {/* X Coordinate Input */}
       <div>
         <Label htmlFor={`x-${circleId}`}>X Point</Label>
         <Input
@@ -77,9 +68,13 @@ export default function Dimension({
           onChange={(e) => handleInputChange("x", e.target.value)}
         />
       </div>
+
+      {/* Separator Icon */}
       <div className="flex">
         <X className="h-10 w-10 mt-6" />
       </div>
+
+      {/* Y Coordinate Input */}
       <div>
         <Label htmlFor={`y-${circleId}`}>Y Point</Label>
         <Input
@@ -92,7 +87,7 @@ export default function Dimension({
         />
       </div>
 
-      {/* Remove circle button */}
+      {/* Remove Circle Button */}
       <Button
         onClick={() => deleteCircle(circleId)}
         variant="ghost"

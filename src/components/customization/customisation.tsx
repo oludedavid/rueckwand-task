@@ -1,4 +1,5 @@
 "use client";
+
 import { useContext, useState } from "react";
 import Dimension from "@/components/dimension/dimension";
 import Material from "@/components/materialContainer/material";
@@ -9,16 +10,17 @@ import { Separator } from "@/components/ui/separator";
 import CircleContext from "@/context/circle-context";
 import { materials } from "@/constants";
 
+interface CustomisationProps {
+  dragZoneRef: React.RefObject<HTMLDivElement>;
+  handleMaterialSelectedId: (materialId: string) => void;
+}
+
 export default function Customisation({
   dragZoneRef,
   handleMaterialSelectedId,
-}: {
-  dragZoneRef: React.RefObject<HTMLDivElement>;
-  handleMaterialSelectedId: (materialId: string) => void;
-}) {
-  const circleContext = useContext(CircleContext);
+}: CustomisationProps) {
+  const { circles, addCircle } = useContext(CircleContext);
   const [selectedMaterial, setSelectedMaterial] = useState(materials[0]);
-  const { circles, addCircle } = circleContext;
 
   const handleMaterialSelected = (materialId: string) => {
     const material = materials.find((m) => m.id === materialId) || materials[0];
@@ -27,27 +29,27 @@ export default function Customisation({
   };
 
   const handleLogData = () => {
-    if (dragZoneRef.current) {
-      const container = dragZoneRef.current.getBoundingClientRect();
+    if (!dragZoneRef.current) return;
 
-      const circleData = circles.map((circle) => {
-        const xPercent = (
-          (circle.coordinates.x / container.width) *
-          100
-        ).toFixed(2);
-        const yPercent = (
-          (circle.coordinates.y / container.height) *
-          100
-        ).toFixed(2);
+    const container = dragZoneRef.current.getBoundingClientRect();
 
-        return {
-          Pixels: `X:${circle.coordinates.x}, Y: ${circle.coordinates.y}`,
-          Percentage: `X:${xPercent}%, Y: ${yPercent}%`,
-          SelectedMaterial: selectedMaterial,
-        };
-      });
-      console.log("Circles Data:", circleData);
-    }
+    const circleData = circles.map((circle) => {
+      const xPercent = ((circle.coordinates.x / container.width) * 100).toFixed(
+        2
+      );
+      const yPercent = (
+        (circle.coordinates.y / container.height) *
+        100
+      ).toFixed(2);
+
+      return {
+        Pixels: `X:${circle.coordinates.x}, Y:${circle.coordinates.y}`,
+        Percentage: `X:${xPercent}%, Y:${yPercent}%`,
+        SelectedMaterial: selectedMaterial,
+      };
+    });
+
+    console.log("Circles Data:", circleData);
   };
 
   return (
@@ -56,7 +58,8 @@ export default function Customisation({
         <div className="space-y-6 pr-4">
           <div>
             <h2 className="text-2xl font-bold mb-4">Maße. Eingeben.</h2>
-            {circles?.map((circle) => (
+
+            {circles.map((circle) => (
               <Dimension
                 key={circle.id}
                 circleId={circle.id}
@@ -64,15 +67,18 @@ export default function Customisation({
                 dragZoneRef={dragZoneRef}
               />
             ))}
+
             <Button
               onClick={addCircle}
-              variant={"default"}
+              variant="default"
               className="w-60 hover:bg-[#167C3D]/20 bg-[#167C3D]/10 border rounded-lg border-[#167C3D] text-[#167C3D] my-4"
             >
               Kreis hinzufügen
               <Plus className="ml-2 h-4 w-4" />
             </Button>
+
             <Separator />
+
             {materials.map((material) => (
               <Material
                 key={material.id}
@@ -84,10 +90,12 @@ export default function Customisation({
                 bgColor={material.bgColor}
               />
             ))}
+
             <Separator />
+
             <div className="mt-4">
               <Button
-                type="submit"
+                type="button"
                 onClick={handleLogData}
                 className="w-60 p-6 bg-[#167C3D] text-white rounded-md"
               >

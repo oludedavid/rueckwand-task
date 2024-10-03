@@ -1,43 +1,26 @@
 "use client";
+
+import { useContext, useState } from "react";
 import Image from "next/image";
 import Circle from "@/components/circle/circle";
-import { useContext, useState, useRef } from "react";
 import CircleContext from "@/context/circle-context";
+
+interface ProductImageProps {
+  materialImageUrl: string;
+  dragZoneRef: React.RefObject<HTMLDivElement>;
+}
 
 export default function ProductImage({
   materialImageUrl,
   dragZoneRef,
-}: {
-  dragZoneRef: React.RefObject<HTMLDivElement>;
-  materialImageUrl: string;
-}) {
-  const circleContext = useContext(CircleContext);
-  //get dragged circle id state
+}: ProductImageProps) {
+  const { circles, updateCircle } = useContext(CircleContext);
   const [isDragging, setIsDragging] = useState(false);
-  const [draggingCircleId, setDraggingCircleId] = useState("");
+  const [draggingCircleId, setDraggingCircleId] = useState<string>("");
 
-  const { circles, updateCircle } = circleContext;
-
-  //Track the circle being dragged at the beginning to the end
-  //onDragStart function
-  const handleDragStart = (circleId: string) => {
-    setIsDragging(true);
-    setDraggingCircleId(circleId);
-  };
-  //onDragEnd function
-  const handleDragEnd = () => {
-    setIsDragging(false);
-    setDraggingCircleId("");
-  };
-  //Drag Over zone
-  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-  };
-
-  //function to check for collision using the center of the circle
   const DIAMETER = 50;
-  const RADIUS = DIAMETER / 2;
-  const COLLISION_DISTANCE_SQUARED = (RADIUS * 2) ** 2;
+  const COLLISION_DISTANCE_SQUARED = DIAMETER ** 2;
+
   const isColliding = (
     x1: number,
     y1: number,
@@ -46,20 +29,21 @@ export default function ProductImage({
   ): boolean => {
     const dx = x2 - x1;
     const dy = y2 - y1;
-    const distanceSquared = dx * dx + dy * dy;
-    return distanceSquared < COLLISION_DISTANCE_SQUARED;
+    return dx * dx + dy * dy < COLLISION_DISTANCE_SQUARED;
   };
 
-  //Drop zone on drag over zone
+  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+  };
+
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
-    if (draggingCircleId === null) return;
+    if (!draggingCircleId) return;
 
     const dropX = event.clientX - event.currentTarget.offsetLeft;
     const dropY = event.clientY - event.currentTarget.offsetTop;
 
-    // Check for collisions with other circles
-    const collides = circles.some((circle, idx) => {
+    const hasCollision = circles.some((circle) => {
       if (circle.id === draggingCircleId) return false;
       return isColliding(
         circle.coordinates.x,
@@ -69,13 +53,24 @@ export default function ProductImage({
       );
     });
 
-    if (!collides) {
+    if (!hasCollision) {
       updateCircle(draggingCircleId, { x: dropX, y: dropY });
     } else {
       console.log("Collided with another circle");
     }
 
     setIsDragging(false);
+    setDraggingCircleId("");
+  };
+
+  const handleDragStart = (circleId: string) => {
+    setIsDragging(true);
+    setDraggingCircleId(circleId);
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+    setDraggingCircleId("");
   };
 
   return (
@@ -88,12 +83,11 @@ export default function ProductImage({
       <Image
         src={materialImageUrl}
         alt="Product Preview"
-        layout="fill"
-        objectFit="cover"
-        className="rounded-lg"
+        fill
+        className="object-cover rounded-lg"
       />
 
-      {circles?.map((circle) => (
+      {circles.map((circle) => (
         <Circle
           key={circle.id}
           id={circle.id}

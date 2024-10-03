@@ -17,9 +17,9 @@ export default function Material({
         <Card
           onClick={() => onSelect(id)}
           style={{ backgroundColor: bgColor }}
-          className={`${
+          className={`flex cursor-pointer bg-opacity-20 transition-all overflow-hidden max-w-72 hover:shadow-lg ${
             isSelected ? "border-2 border-[#167C3D]" : ""
-          }   flex cursor-pointer bg-opacity-20 transition-all overflow-hidden max-w-72 hover:shadow-lg`}
+          }`}
         >
           <Lens>
             <div className="flex">
@@ -33,7 +33,6 @@ export default function Material({
                   className="w-full h-full"
                 />
               </div>
-
               <CardContent className="flex-1 p-4 flex flex-col justify-center">
                 <h3 className="font-semibold text-lg mb-2">{name}</h3>
               </CardContent>
