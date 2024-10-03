@@ -3,6 +3,7 @@ import Image from "next/image";
 import Circle from "@/components/circle/circle";
 import { useContext, useState, useRef } from "react";
 import CircleContext from "@/context/circle-context";
+
 export default function ProductImage({
   materialImageUrl,
   dragZoneRef,

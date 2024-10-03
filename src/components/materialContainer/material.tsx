@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import { TMaterialSelected } from "@/types";
+import { Lens } from "../ui/lens";
 
 export default function Material({
   id,
@@ -20,19 +21,24 @@ export default function Material({
             isSelected ? "border-2 border-[#167C3D]" : ""
           }   flex cursor-pointer bg-opacity-20 transition-all overflow-hidden max-w-72 hover:shadow-lg`}
         >
-          <div className="flex h-32">
-            <div className="w-32 relative">
-              <Image
-                src={imageUrl}
-                alt={name}
-                layout="fill"
-                objectFit="cover"
-              />
+          <Lens>
+            <div className="flex">
+              <div className="flex w-40 h-40 p-[1px]">
+                <Image
+                  src={imageUrl}
+                  alt={name}
+                  width={160}
+                  height={120}
+                  objectFit="cover"
+                  className="w-full h-full"
+                />
+              </div>
+
+              <CardContent className="flex-1 p-4 flex flex-col justify-center">
+                <h3 className="font-semibold text-lg mb-2">{name}</h3>
+              </CardContent>
             </div>
-          </div>
-          <CardContent className="flex-1 p-4 flex flex-col justify-center">
-            <h3 className="font-semibold text-lg mb-2">{name}</h3>
-          </CardContent>
+          </Lens>
         </Card>
       </div>
     </div>

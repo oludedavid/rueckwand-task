@@ -81,6 +81,7 @@ export default function Home() {
 
   return (
     <div className="container  px-4 py-8 mx-auto">
+      <h1 className="text-3xl p-1 font-bold">Küchenrückwand</h1>
       <div className="flex flex-col lg:flex-row gap-8">
         <CircleContext.Provider
           value={{ circles, addCircle, updateCircle, deleteCircle }}
@@ -89,6 +90,7 @@ export default function Home() {
             dragZoneRef={dragZoneRef}
             materialImageUrl={materialImageUrl}
           />
+
           <Customisation
             dragZoneRef={dragZoneRef}
             handleMaterialSelectedId={handleMaterialSelectedId}
